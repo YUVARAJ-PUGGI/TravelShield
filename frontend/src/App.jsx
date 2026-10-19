@@ -1,122 +1,36 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
+import './home-reference.css'
+import './travel-background.css'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
-
-export default App
+const countries = ['United Kingdom', 'Canada', 'Australia', 'Germany', 'Japan', 'France']
+const plans = ['Essential', 'Comprehensive', 'Premier']
+const defaultClaims = [{ id: 'CLM-11842', type: 'Medical expense', destination: 'London, UK', amount: '$186.40', status: 'Under review' }, { id: 'CLM-11703', type: 'Delayed baggage', destination: 'Toronto, CA', amount: '$420.00', status: 'Approved' }]
+const defaultPolicy = { id: 'TS-20481', destination: 'United Kingdom', plan: 'Comprehensive', start: 'Aug 24, 2026', end: 'Dec 18, 2026', status: 'Active' }
+function useStore(key, initial) { const [value, setValue] = useState(() => JSON.parse(localStorage.getItem(key) || 'null') || initial); useEffect(() => localStorage.setItem(key, JSON.stringify(value)), [key, value]); return [value, setValue] }
+function go(path) { history.pushState({}, '', path); dispatchEvent(new PopStateEvent('popstate')) }
+function Link({ to, children, className = '' }) { return <a href={to} className={className} onClick={(e) => { e.preventDefault(); go(to) }}>{children}</a> }
+function Button({ to, children, variant = '', onClick, type = 'button' }) { return to ? <Link to={to} className={`button ${variant}`}>{children} <span>→</span></Link> : <button type={type} className={`button ${variant}`} onClick={onClick}>{children}</button> }
+function Logo() { return <Link to="/" className="brand"><span className="brand-mark">✈</span>TravelShield <b>Abroad</b></Link> }
+function TravelBackground() { return <div className="travel-background" aria-hidden="true"><svg className="travel-map" viewBox="0 0 900 430" preserveAspectRatio="none"><path d="M33 137 83 106l61 18 28-28 62 11 35 31 71-14 53 28-14 36-64 7-31 31-66-13-46 35-67-13-54-42Zm493-55 39-27 60 13 28 31 76-12 48 31-35 26-61-8-25 34-48-9-38-33-48-10 4-36Zm-72 185 64 2 31 28-23 32-65 3-41-30 34-35Z" /><path d="m704 255 48-17 48 24-15 44-51 12-38-28 8-35ZM207 296l45-17 43 18-7 36-63 16-41-23 23-30Z" /></svg><span className="background-route route-one" /><span className="background-route route-two" /><span className="background-plane plane-one">✈</span><span className="background-plane plane-two">✈</span><span className="background-pin pin-one">●</span><span className="background-pin pin-two">●</span><span className="background-shape shape-one" /><span className="background-shape shape-two" /></div> }
+function Public({ children }) { const currentPath = location.pathname; const navItems = [['/', 'Home'], ['/coverage', 'Explore Coverage'], ['/how-it-works', 'How It Works'], ['/policies', 'My Policies'], ['/claims', 'Claims']]; return <div className="public-layout"><TravelBackground /><header className="public-nav"><Logo /><nav>{navItems.map(([to, label]) => <Link key={to} to={to} className={currentPath === to ? 'active' : ''}>{label}</Link>)}<Button to="/quote">Get Covered</Button></nav></header>{children}<footer className="public-footer"><Logo><span /></Logo><div className="footer-links"><Link to="/coverage">Coverage</Link><Link to="/sign-in">Sign in</Link></div><small>© 2026 TravelShield Abroad. DEMO product for education.</small></footer></div> }
+function Intro({ eyebrow, title, text, children }) { return <section className="page-intro"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{text}</p></div>{children}</section> }
+function Empty({ title, text, to, action }) { return <div className="empty-state"><h2>{title}</h2><p>{text}</p>{to && <Button to={to}>{action}</Button>}</div> }
+function Home() { const cards = [['◎', 'Country-Based Coverage', 'Check eligible coverage for your destination.', '/coverage'], ['▣', 'Plans & Premiums', 'Compare available plans and estimate your premium.', '/plans'], ['✓', 'Claims Assistance', 'Submit claims and track your status easily.', '/submit-claim']]; return <Public><main className="home"><span className="decor decor-route" aria-hidden="true" /><span className="decor decor-plane" aria-hidden="true">✈</span><span className="decor decor-pin" aria-hidden="true">●</span><section className="hero"><div><p className="eyebrow">Student travel insurance</p><h1>Your journey abroad.<br /><em>Your coverage,</em> simplified.</h1><p className="hero-text">Explore country-specific insurance coverage, compare plans, estimate your premium, and manage your policy and claims all in one place.</p><Button to="/coverage">Explore Coverage</Button></div><div className="hero-art"><div className="photo photo-main" /><div className="photo photo-city" /><div className="photo photo-mountain" /><b className="art-sticker">Your next<br />chapter awaits</b></div></section><section className="feature-row">{cards.map(([icon, title, text, to]) => <article className="feature-card" key={title}><span className="icon-mark">{icon}</span><h3>{title}</h3><p>{text}</p><Link to={to} className="text-link">Explore →</Link></article>)}</section><section className="story-section"><div><p className="eyebrow">A clearer way to travel</p><h2>From first quote<br />to final arrival.</h2></div>{['Choose your destination', 'Build your protection', 'Travel with confidence'].map((title, i) => <div className="step" key={title}><strong>0{i + 1}</strong><div><h3>{title}</h3><p>Keep the important details of your journey in one calm place.</p></div></div>)}</section></main></Public> }
+function Coverage() { const [query, setQuery] = useState(''); const found = countries.filter((x) => x.toLowerCase().includes(query.toLowerCase())); return <Public><main className="public-page"><Intro eyebrow="Explore coverage" title="Know where you stand, wherever you land." text="Select a destination to see demo protection and requirements."><label className="search">⌕ <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search a country..." /></label></Intro><div className="country-grid">{found.map((country, i) => <Link to={`/coverage/${country.toLowerCase().replaceAll(' ', '-')}`} className="country-card" key={country}><b>0{i + 1}</b><div><h3>{country}</h3><p>Medical, interruption & baggage</p></div><span>↗</span></Link>)}</div>{!found.length && <Empty title="No destinations found" text="Try a different country name." />}</main></Public> }
+function Country() { const name = location.pathname.split('/').pop().replaceAll('-', ' ').replace(/\b\w/g, (x) => x.toUpperCase()); return <Public><main className="public-page narrow"><Link to="/coverage" className="back-link">← All destinations</Link><Intro eyebrow="Destination guide" title={`${name} coverage, made clear.`} text="A demo overview of the benefits students can expect from a TravelShield plan." /><div className="detail-grid"><section className="content-panel"><h2>What's included</h2>{['Emergency medical and hospital care', 'Trip interruption and cancellation', 'Baggage delay and personal effects', '24/7 assistance line'].map((x) => <p className="check-row" key={x}>✓ {x}</p>)}</section><section className="content-panel rule-panel"><p className="eyebrow">Before you travel</p><h2>Good to know</h2><p>Review plan documents before making a demo purchase.</p><Button to="/plans">Compare plans</Button></section></div></main></Public> }
+function Plans() { return <Public><main className="public-page"><Intro eyebrow="Plans & premiums" title="Protection that fits your trip." text="Compare demo plans side by side, then calculate an illustrative estimate."><Button to="/quote">Calculate my premium</Button></Intro><div className="plan-grid">{plans.map((name, i) => <article className="plan-card" key={name}><div className="plan-top">{name}</div><div className="plan-price"><b>${32 + i * 26}</b><small>/ week from</small></div><ul><li>✓ Emergency medical cover</li><li>✓ Trip interruption</li><li>✓ 24/7 assistance</li></ul><Button to="/quote">Choose {name}</Button></article>)}</div><p className="demo-note">DEMO estimates only. No real insurance or payment is created.</p></main></Public> }
+function Quote() { const [form, setForm] = useState({ destination: countries[0], plan: plans[1], days: 16 }); const [done, setDone] = useState(false); const premium = Math.round(form.days * 4.2 + plans.indexOf(form.plan) * 26); if (done) return <Public><Success title="Your demo quote is ready." text={`Estimated premium: $${premium}.00`} to="/policies" action="View my policies" /></Public>; return <Public><main className="public-page narrow"><Intro eyebrow="Get a quote" title="A simple first step." text="Tell us about your trip for an illustrative, browser-only estimate." /><div className="form-panel"><label className="form-field">Destination<select value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })}>{countries.map((x) => <option key={x}>{x}</option>)}</select></label><label className="form-field">Plan<select value={form.plan} onChange={(e) => setForm({ ...form, plan: e.target.value })}>{plans.map((x) => <option key={x}>{x}</option>)}</select></label><label className="form-field">Trip duration (days)<input type="number" min="1" value={form.days} onChange={(e) => setForm({ ...form, days: Number(e.target.value) || 1 })} /></label><div className="quote-total">DEMO estimated premium <strong>${premium}.00</strong></div><Button onClick={() => setDone(true)}>Save demo quote</Button></div></main></Public> }
+function Success({ title, text, to, action }) { return <main className="success-page"><div className="success-icon">✓</div><p className="eyebrow">Demo action complete</p><h1>{title}</h1><p>{text}</p><Button to={to}>{action}</Button></main> }
+function Auth({ signup = false }) { return <Public><main className="auth-page"><div className="auth-aside"><p className="eyebrow">Welcome to the other side</p><h1>Go further,<br /><em>feel covered.</em></h1></div><form className="auth-card" onSubmit={(e) => { e.preventDefault(); go('/dashboard') }}><h2>{signup ? 'Create your account' : 'Welcome back'}</h2><p>Sign in to manage your demo protection.</p>{signup && <input required placeholder="Full name" />}<input required type="email" placeholder="Email address" /><input required type="password" placeholder="Password" /><Button type="submit">{signup ? 'Create demo account' : 'Sign in'}</Button></form></main></Public> }
+function Sidebar({ admin }) { const links = admin ? [['/admin', 'Overview'], ['/admin/countries', 'Countries & rules'], ['/admin/policies', 'Policies'], ['/admin/purchases', 'Purchases'], ['/admin/claims', 'Claims review'], ['/admin/students', 'Students']] : [['/dashboard', 'Overview'], ['/quote', 'Get a quote'], ['/policies', 'My policies'], ['/claims', 'My claims'], ['/documents', 'Documents'], ['/notifications', 'Notifications'], ['/profile', 'Profile & settings']]; return <aside className="sidebar"><Logo /><p className="side-label">{admin ? 'Operations' : 'My travel space'}</p><nav>{links.map(([to, label]) => <Link to={to} key={to}>{label}</Link>)}</nav><Link to="/" className="sign-out">↩ Sign out</Link></aside> }
+function AppLayout({ children, admin = false }) { return <div className="app-layout"><TravelBackground /><Sidebar admin={admin} /><div className="app-main"><header className="app-header"><span className="avatar">AM</span> Alex Morgan</header>{children}</div></div> }
+function AppPage({ title, eyebrow = 'My travel space', children, action }) { return <main className="app-page"><div className="app-page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1></div>{action}</div>{children}</main> }
+function Dashboard({ admin = false }) { return <AppLayout admin={admin}><AppPage eyebrow={admin ? 'Operations overview' : 'Monday, 19 October 2026'} title={admin ? 'Operations overview' : 'Good morning, Alex.'} action={!admin && <Button to="/quote">+ Get a quote</Button>}><div className="stats"><div className="stat"><span>{admin ? 'Active students' : 'Active policies'}</span><strong>{admin ? '1,284' : '1'}</strong><small>Demo data</small></div><div className="stat"><span>{admin ? 'Policies sold' : 'Claims under review'}</span><strong>{admin ? '846' : '1'}</strong><small>Updated recently</small></div><div className="stat"><span>{admin ? 'Claims to review' : 'Next expiry'}</span><strong>{admin ? '18' : '18 Dec'}</strong><small>Needs attention</small></div></div><div className="dashboard-grid"><section className="table-panel"><h2>Recent activity</h2><p className="activity">✓ Claim CLM-11842 received</p><p className="activity">▤ Policy TS-20481 is active</p><p className="activity">↗ Quote saved</p></section><section className="quick-panel"><h2>Quick actions</h2><Button to="/quote">Get a quote</Button><Button to="/policies" variant="outline">View my policies</Button><Button to="/submit-claim" variant="outline">Submit a claim</Button></section></div></AppPage></AppLayout> }
+function Policies() { const [policy] = useStore('ts-policy', defaultPolicy); return <AppLayout><AppPage title="My policies" action={<Button to="/quote">+ New quote</Button>}><article className="policy-card"><span className="status">{policy.status}</span><h2>{policy.destination}</h2><p>{policy.plan} plan · {policy.start} to {policy.end}</p><Link to="/policy/TS-20481" className="text-link">View policy details →</Link></article><p className="demo-note">DEMO RECORD: no real policy or payment exists.</p></AppPage></AppLayout> }
+function Claims({ admin = false }) { const [claims] = useStore('ts-claims', defaultClaims); const [query, setQuery] = useState(''); const rows = claims.filter((x) => Object.values(x).join(' ').toLowerCase().includes(query.toLowerCase())); return <AppLayout admin={admin}><AppPage title={admin ? 'Claims review' : 'My claims'} eyebrow={admin ? 'Operations' : undefined} action={!admin && <Button to="/submit-claim">+ Submit a claim</Button>}><label className="search"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search claims..." /></label><div className="data-table">{rows.map((claim) => <Link className="table-row" to={admin ? `/admin/claims/${claim.id}` : `/claim/${claim.id}`} key={claim.id}><b>{claim.id}</b><span>{claim.type}<small>{claim.destination}</small></span><span>{claim.amount}</span><span className="status">{claim.status}</span></Link>)}</div></AppPage></AppLayout> }
+function SubmitClaim() { const [claims, setClaims] = useStore('ts-claims', defaultClaims); const [saved, setSaved] = useState(false); if (saved) return <AppLayout><Success title="Claim submitted for review." text="Your demo claim is now visible in My Claims." action="View my claims" to="/claims" /></AppLayout>; return <AppLayout><AppPage title="Submit a claim"><form className="form-panel" onSubmit={(e) => { e.preventDefault(); setClaims([{ id: 'CLM-12901', type: 'Medical expense', destination: 'United Kingdom', amount: '$250.00', status: 'Under review' }, ...claims]); setSaved(true) }}><input required placeholder="Claim amount" /><textarea required placeholder="What happened?" /><Button type="submit">Submit demo claim</Button></form></AppPage></AppLayout> }
+function AdminTable({ title }) { return <AppLayout admin><AppPage title={title} eyebrow="Operations"><div className="data-table">{countries.map((x) => <div className="table-row" key={x}><b>{x}</b><span>Medical + trip</span><span className="status">Published</span></div>)}</div></AppPage></AppLayout> }
+function Simple({ title }) { return <AppLayout><AppPage title={title}><Empty title="Nothing new here" text="This demo section is ready for your future records." /></AppPage></AppLayout> }
+function Router() { const [path, setPath] = useState(location.pathname); useEffect(() => { const f = () => setPath(location.pathname); addEventListener('popstate', f); return () => removeEventListener('popstate', f) }, []); if (path === '/') return <Home />; if (path === '/coverage') return <Coverage />; if (path.startsWith('/coverage/')) return <Country />; if (path === '/plans') return <Plans />; if (path === '/quote') return <Quote />; if (path === '/how-it-works') return <Public><main className="public-page"><Intro eyebrow="How it works" title="Less paperwork. More possibility." text="Explore, compare, and manage one clear demo journey." /></main></Public>; if (path === '/sign-in') return <Auth />; if (path === '/sign-up') return <Auth signup />; if (path === '/dashboard') return <Dashboard />; if (path === '/policies') return <Policies />; if (path.startsWith('/policy/')) return <Simple title="Policy details" />; if (path === '/claims') return <Claims />; if (path === '/submit-claim') return <SubmitClaim />; if (path.startsWith('/claim/')) return <Simple title="Claim details" />; if (path === '/admin') return <Dashboard admin />; if (path === '/admin/claims') return <Claims admin />; if (path.startsWith('/admin/claims/')) return <Simple title="Claim review details" />; if (path.startsWith('/admin/')) return <AdminTable title="Manage records" />; if (path === '/documents') return <Simple title="Documents & invoices" />; if (path === '/notifications') return <Simple title="Notifications" />; if (path === '/profile') return <Simple title="Profile & settings" />; return <Home /> }
+export default function App() { return <Router /> }

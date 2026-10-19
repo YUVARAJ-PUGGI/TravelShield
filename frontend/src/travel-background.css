@@ -1,0 +1,98 @@
+.public-layout,
+.app-layout {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: var(--cream, #f8f3ee);
+}
+.public-layout > :not(.travel-background),
+.app-layout > :not(.travel-background) {
+  position: relative;
+  z-index: 1;
+}
+.travel-background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 7% 74%, rgba(7, 140, 182, .10) 0 115px, transparent 116px),
+    radial-gradient(circle at 96% 39%, rgba(255, 198, 41, .09) 0 82px, transparent 83px),
+    linear-gradient(135deg, rgba(255,255,255,.16), transparent 38%);
+}
+.travel-map {
+  position: absolute;
+  width: min(1050px, 86vw);
+  height: auto;
+  right: -12vw;
+  top: 90px;
+  fill: #a8cfc9;
+  opacity: .15;
+}
+.travel-map path { vector-effect: non-scaling-stroke; }
+.background-route {
+  position: absolute;
+  display: block;
+  width: 300px;
+  height: 130px;
+  border: 2px dashed var(--yellow, #ffc629);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  opacity: .72;
+  transform: rotate(24deg);
+}
+.route-one { left: -125px; top: 42%; }
+.route-two { right: -130px; bottom: 13%; transform: rotate(-26deg); }
+.background-plane {
+  position: absolute;
+  color: var(--deep, #17382b);
+  opacity: .2;
+  font-size: 2.2rem;
+}
+.plane-one { right: 4%; top: 29%; transform: rotate(-24deg); }
+.plane-two { left: 4%; bottom: 17%; transform: rotate(28deg); font-size: 1.8rem; }
+.background-pin {
+  position: absolute;
+  color: var(--yellow, #ffc629);
+  opacity: .55;
+  font-size: 1.15rem;
+  text-shadow: 0 8px 0 rgba(255, 198, 41, .25);
+}
+.pin-one { right: 11%; top: 47%; }
+.pin-two { left: 11%; bottom: 31%; }
+.background-shape {
+  position: absolute;
+  border-radius: 50% 50% 12% 50%;
+  background: #8fc7c3;
+  opacity: .16;
+}
+.shape-one { width: 135px; height: 190px; left: -50px; bottom: 4%; transform: rotate(-27deg); }
+.shape-two { width: 175px; height: 105px; right: -45px; bottom: -15px; transform: rotate(25deg); }
+.home { background: transparent; }
+.public-page, .auth-page, .success-page { background: transparent; }
+.app-layout .travel-background {
+  position: absolute;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 93% 12%, rgba(7, 140, 182, .06) 0 110px, transparent 111px),
+    radial-gradient(circle at 8% 87%, rgba(255, 198, 41, .06) 0 95px, transparent 96px),
+    #f5f1eb;
+}
+.app-layout .travel-map { width: min(900px, 72vw); top: 110px; right: -12%; opacity: .1; }
+.app-layout .background-route { opacity: .38; }
+.app-layout .background-plane { opacity: .11; font-size: 2.4rem; }
+.app-layout .background-pin { opacity: .32; }
+.app-layout .background-shape { opacity: .09; }
+.app-main { position: relative; z-index: 1; }
+.sidebar { position: relative; z-index: 2; }
+.app-header,
+.app-page { position: relative; z-index: 1; }
+@media (max-width: 700px) {
+  .travel-map { width: 150vw; right: -57vw; top: 180px; opacity: .08; }
+  .background-route { transform: scale(.75) rotate(24deg); }
+  .plane-one { right: 2%; top: 33%; }
+  .pin-one { right: 7%; top: 49%; }
+  .app-layout .travel-map { width: 145vw; right: -55vw; }
+}
