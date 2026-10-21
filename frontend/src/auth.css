@@ -1,0 +1,86 @@
+.auth-card {
+  width: min(100%, 440px);
+  gap: 0;
+  padding: 42px;
+}
+
+.auth-card h2 {
+  margin-bottom: 10px;
+  color: var(--deep);
+}
+
+.auth-card > p:not(.demo-note):not(.form-error) {
+  margin-bottom: 28px;
+}
+
+.auth-card > input,
+.password-field {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.auth-card > input,
+.password-field input {
+  height: 52px;
+  padding: 0 15px;
+  border: 1px solid #d9ddd7;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--deep);
+  font: inherit;
+  outline-color: var(--teal);
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 66px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--teal);
+  cursor: pointer;
+  font: 600 .78rem inherit;
+}
+
+.auth-card .form-error {
+  margin: 0 0 16px;
+}
+
+.auth-card > .button {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.auth-card .demo-note {
+  margin: 22px 0 0;
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 45px 20px 65px;
+  }
+
+  .auth-aside {
+    min-height: 220px;
+    padding: 30px;
+  }
+
+  .auth-card {
+    padding: 30px 24px;
+  }
+}

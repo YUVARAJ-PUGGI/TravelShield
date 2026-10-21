@@ -3,6 +3,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./src/config/db.js";
+import planRoutes from "./src/routes/planRoutes.js";
+import quoteRoutes from "./src/routes/quoteRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js";
+import countryRoutes from "./src/routes/countryRoutes.js";
 
 dotenv.config();
 
@@ -10,6 +14,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/plans", planRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/countries", countryRoutes);
+app.use("/api/quotes", quoteRoutes);
 
 app.get("/", (req, res) => {
   res.json({
