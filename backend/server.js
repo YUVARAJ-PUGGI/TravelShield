@@ -7,6 +7,7 @@ import planRoutes from "./src/routes/planRoutes.js";
 import quoteRoutes from "./src/routes/quoteRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import countryRoutes from "./src/routes/countryRoutes.js";
+import policyRoutes from "./src/routes/policyRoutes.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use("/api/plans", planRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/countries", countryRoutes);
 app.use("/api/quotes", quoteRoutes);
+app.use("/api/policies", policyRoutes);
 
 app.get("/", (req, res) => {
   res.json({
