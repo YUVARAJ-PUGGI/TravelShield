@@ -129,6 +129,18 @@
   overflow-wrap: anywhere;
 }
 
+.policy-download {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.policy-download .form-error {
+  flex-basis: 100%;
+}
+
 .saved-quote-header {
   display: flex;
   justify-content: space-between;
