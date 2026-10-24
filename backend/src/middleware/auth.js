@@ -3,8 +3,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const authSecret =
-  process.env.AUTH_SECRET || crypto.randomBytes(32).toString("hex");
+const authSecret = process.env.AUTH_SECRET?.trim();
+if (!authSecret || authSecret === "replace-with-a-long-random-secret") {
+  throw new Error(
+    "AUTH_SECRET must be set to a stable, non-placeholder value in the backend environment."
+  );
+}
 const tokenLifetimeSeconds = 24 * 60 * 60;
 
 function sign(value) {

@@ -14,6 +14,12 @@ test("uses inclusive calendar duration and traveller count supplied by the route
   assert.equal(calculatePremium(3.5, 10, 2), 70);
 });
 
+test("does not add policy coverage limits or deductibles to the illustrative premium", () => {
+  assert.equal(calculatePremium(2, 1, 1), 2);
+  assert.equal(calculatePremium(3.5, 1, 1), 3.5);
+  assert.equal(calculatePremium(5, 1, 1), 5);
+});
+
 test("preserves valid date-only values without timezone conversion", () => {
   assert.equal(normalizeDateOnly("2026-10-21"), "2026-10-21");
   assert.equal(normalizeDateOnly("2026-02-30"), null);

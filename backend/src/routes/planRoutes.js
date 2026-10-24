@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
         plan_name,
         description,
         coverage_amount,
+        deductible_amount,
         base_daily_rate,
         currency_code,
         coverage_benefits,

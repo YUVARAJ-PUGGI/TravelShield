@@ -6,8 +6,11 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT country_id, country_code, country_name, currency_code
-       FROM countries WHERE is_active = 1 ORDER BY country_name`
+      `SELECT country_id, country_name
+       FROM countries
+       WHERE is_active = 1
+         AND country_name IN ('Australia', 'Germany', 'United Kingdom', 'United States')
+       ORDER BY country_name`
     );
     return res.json({ success: true, count: rows.length, data: rows });
   } catch (error) {

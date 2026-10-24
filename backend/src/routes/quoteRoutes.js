@@ -85,7 +85,7 @@ router.post("/", async (req, res) => {
     }
 
     const [countries] = await connection.query(
-      `SELECT country_id, country_name, currency_code
+      `SELECT country_id, country_name
        FROM countries WHERE country_id = ? AND is_active = 1`,
       [destinationCountryId]
     );
@@ -159,7 +159,7 @@ router.get("/", async (req, res) => {
               DATE_FORMAT(q.end_date, '%Y-%m-%d') AS end_date,
               q.traveller_count,
               q.premium_amount, q.currency_code, q.quote_status, q.created_at,
-              p.plan_id, p.plan_name, p.description, p.coverage_amount,
+              p.plan_id, p.plan_name, p.description, p.coverage_amount, p.deductible_amount,
               p.base_daily_rate, p.coverage_benefits, p.exclusions,
               p.eligibility_requirements, p.policy_conditions, c.country_name
        FROM quotes q
