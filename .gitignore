@@ -3,3 +3,8 @@ node_modules/
 .env
 dist/
 .DS_Store
+private-storage/
+backend/private-storage/
+*.sql.bak
+*_backup.sql
+*_before_*.sql

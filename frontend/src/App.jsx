@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { jsPDF } from 'jspdf'
 import './App.css'
 import './home-reference.css'
@@ -9,7 +9,7 @@ import './quotes.css'
 const apiBase = 'http://localhost:5000/api'
 function authToken() { return localStorage.getItem('ts-auth-token') }
 function hasUnexpiredToken() { const token = authToken(); if (!token) return false; const parts = token.split('.'); const expiresAt = Number(parts[1]); if (parts.length !== 3 || !Number.isInteger(expiresAt) || expiresAt < Math.floor(Date.now() / 1000)) { localStorage.removeItem('ts-auth-token'); return false } return true }
-async function apiRequest(path, options = {}) { const response = await fetch(`${apiBase}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(authToken() ? { Authorization: `Bearer ${authToken()}` } : {}), ...(options.headers || {}) } }); const result = await response.json(); if (!response.ok || !result.success) { const error = new Error(result.message || 'Request failed'); error.status = response.status; throw error } return result }
+async function apiRequest(path, options = {}) { const isFormData = options.body instanceof FormData; const response = await fetch(`${apiBase}${path}`, { ...options, headers: { ...(isFormData ? {} : { 'Content-Type': 'application/json' }), ...(authToken() ? { Authorization: `Bearer ${authToken()}` } : {}), ...(options.headers || {}) } }); const result = await response.json(); if (!response.ok || !result.success) { const error = new Error(result.message || 'Request failed'); error.status = response.status; throw error } return result }
 const AuthContext = createContext(null)
 function AuthProvider({ children }) { const [user, setUser] = useState(null); const [status, setStatus] = useState(() => authToken() && hasUnexpiredToken() ? 'checking' : 'unauthenticated'); useEffect(() => { if (!authToken()) return undefined; let cancelled = false; apiRequest('/auth/me').then((result) => { if (cancelled) return; setUser(result.data); setStatus('authenticated'); localStorage.setItem('ts-auth-user', JSON.stringify(result.data)) }).catch((requestError) => { if (cancelled) return; if (requestError.status === 401) { localStorage.removeItem('ts-auth-token'); localStorage.removeItem('ts-auth-user'); setUser(null); setStatus('unauthenticated') } else setStatus('error') }); return () => { cancelled = true } }, []); const setSession = (nextUser, token) => { localStorage.setItem('ts-auth-token', token); localStorage.setItem('ts-auth-user', JSON.stringify(nextUser)); setUser(nextUser); setStatus('authenticated') }; const logout = () => { localStorage.removeItem('ts-auth-token'); localStorage.removeItem('ts-auth-user'); setUser(null); setStatus('unauthenticated') }; return <AuthContext.Provider value={{ user, status, setSession, logout }}>{children}</AuthContext.Provider> }
 function useAuth() { return useContext(AuthContext) }
@@ -156,9 +156,29 @@ function SubmitClaim() {
 function ClaimDetails({ claimId }) {
   const id = Number(claimId)
   const invalidClaimId = !Number.isInteger(id) || id <= 0
+  const evidenceFormRef = useRef(null)
   const [claim, setClaim] = useState(null)
+  const [evidence, setEvidence] = useState([])
   const [loading, setLoading] = useState(!invalidClaimId)
+  const [evidenceLoading, setEvidenceLoading] = useState(!invalidClaimId)
   const [error, setError] = useState('')
+  const [evidenceError, setEvidenceError] = useState('')
+  const [uploadError, setUploadError] = useState('')
+  const [uploadSuccess, setUploadSuccess] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const loadEvidence = () => {
+    setEvidenceLoading(true)
+    setEvidenceError('')
+    return apiRequest(`/claims/${id}/evidence`).then((result) => setEvidence(result.data)).catch((requestError) => {
+      if (requestError.status === 401) {
+        localStorage.removeItem('ts-auth-token')
+        localStorage.removeItem('ts-auth-user')
+        go(`/sign-in?redirect=${encodeURIComponent(`/claim/${claimId}`)}`)
+        return
+      }
+      setEvidenceError(requestError.message)
+    }).finally(() => setEvidenceLoading(false))
+  }
   useEffect(() => {
     if (invalidClaimId) return undefined
     apiRequest(`/claims/${id}`).then((result) => setClaim(result.data)).catch((requestError) => {
@@ -170,7 +190,64 @@ function ClaimDetails({ claimId }) {
     }).finally(() => setLoading(false))
     return undefined
   }, [id, invalidClaimId, claimId])
-  return <AppLayout><AppPage title="Claim details" action={<Button to="/claims" variant="outline">Back to my claims</Button>}><div className="claims-intro"><p>Educational simulation only — this record is not a real insurance claim or reimbursement decision.</p></div>{loading && <div className="empty-state"><h2>Loading simulated claim</h2><p>Fetching the claim from your account.</p></div>}{!loading && (invalidClaimId || error) && <div className="quotes-error"><strong>We couldn't load this simulated claim.</strong><p>{invalidClaimId ? 'The claim ID is invalid.' : error}</p></div>}{!loading && !invalidClaimId && !error && claim && <article className="claim-card claim-detail-card"><div className="claim-card-header"><div><p className="quote-label">Simulated claim</p><h2>{claim.claim_number}</h2></div><span className="policy-status">{claimStatusLabel(claim.claim_status)}</span></div><div className="claim-details"><div><span>Incident date</span><strong>{formatQuoteDate(claim.incident_date)}</strong></div><div><span>Claimed amount</span><strong>{formatMoney(claim.claimed_amount, claim.currency_code)}</strong></div><div><span>Submitted</span><strong>{formatQuoteDate(claim.submitted_at)}</strong></div><div><span>Policy</span><strong>{claim.policy_number || `Policy ${claim.policy_id}`}</strong></div><div><span>Plan</span><strong>{claim.plan_name}</strong></div><div><span>Coverage dates</span><strong>{formatQuoteDate(claim.coverage_start_date)} – {formatQuoteDate(claim.coverage_end_date)}</strong></div></div><section className="claim-description"><span>Incident details</span><p>{claim.description}</p></section><div className="policy-detail-note"><strong>Educational simulation only</strong><p>This record does not confirm active insurance coverage, claim eligibility, approval, payment, settlement, or reimbursement.</p></div></article>}</AppPage></AppLayout>
+  useEffect(() => {
+    if (invalidClaimId) return undefined
+    apiRequest(`/claims/${id}/evidence`).then((result) => setEvidence(result.data)).catch((requestError) => {
+      if (requestError.status === 401) {
+        localStorage.removeItem('ts-auth-token')
+        localStorage.removeItem('ts-auth-user')
+        go(`/sign-in?redirect=${encodeURIComponent(`/claim/${claimId}`)}`)
+      } else setEvidenceError(requestError.message)
+    }).finally(() => setEvidenceLoading(false))
+    return undefined
+  }, [id, invalidClaimId, claimId])
+  const uploadEvidence = async (event) => {
+    event.preventDefault()
+    const file = event.currentTarget.elements.evidence.files[0]
+    if (!file) {
+      setUploadError('Choose a PDF, JPEG, or PNG document to upload.')
+      return
+    }
+    setUploading(true)
+    setUploadError('')
+    setUploadSuccess('')
+    const formData = new FormData()
+    formData.append('evidence', file)
+    try {
+      await apiRequest(`/claims/${id}/evidence`, { method: 'POST', body: formData })
+      evidenceFormRef.current?.reset()
+      setUploadSuccess('Evidence document uploaded securely.')
+      await loadEvidence()
+    } catch (requestError) {
+      if (requestError.status === 401) {
+        localStorage.removeItem('ts-auth-token')
+        localStorage.removeItem('ts-auth-user')
+        go(`/sign-in?redirect=${encodeURIComponent(`/claim/${claimId}`)}`)
+      } else setUploadError(requestError.message)
+    } finally {
+      setUploading(false)
+    }
+  }
+  const downloadEvidence = async (document) => {
+    setEvidenceError('')
+    try {
+      const response = await fetch(`${apiBase}/claims/${id}/evidence/${document.document_id}/download`, { headers: { Authorization: `Bearer ${authToken()}` } })
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.message || 'Download failed')
+      }
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const link = window.document.createElement('a')
+      link.href = url
+      link.download = document.original_filename
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (requestError) {
+      setEvidenceError(requestError.message)
+    }
+  }
+  return <AppLayout><AppPage title="Claim details" action={<Button to="/claims" variant="outline">Back to my claims</Button>}><div className="claims-intro"><p>Educational simulation only — this record is not a real insurance claim or reimbursement decision.</p></div>{loading && <div className="empty-state"><h2>Loading simulated claim</h2><p>Fetching the claim from your account.</p></div>}{!loading && (invalidClaimId || error) && <div className="quotes-error"><strong>We couldn't load this simulated claim.</strong><p>{invalidClaimId ? 'The claim ID is invalid.' : error}</p></div>}{!loading && !invalidClaimId && !error && claim && <><article className="claim-card claim-detail-card"><div className="claim-card-header"><div><p className="quote-label">Simulated claim</p><h2>{claim.claim_number}</h2></div><span className="policy-status">{claimStatusLabel(claim.claim_status)}</span></div><div className="claim-details"><div><span>Incident date</span><strong>{formatQuoteDate(claim.incident_date)}</strong></div><div><span>Claimed amount</span><strong>{formatMoney(claim.claimed_amount, claim.currency_code)}</strong></div><div><span>Submitted</span><strong>{formatQuoteDate(claim.submitted_at)}</strong></div><div><span>Policy</span><strong>{claim.policy_number || `Policy ${claim.policy_id}`}</strong></div><div><span>Plan</span><strong>{claim.plan_name}</strong></div><div><span>Coverage dates</span><strong>{formatQuoteDate(claim.coverage_start_date)} – {formatQuoteDate(claim.coverage_end_date)}</strong></div></div><section className="claim-description"><span>Incident details</span><p>{claim.description}</p></section><div className="policy-detail-note"><strong>Educational simulation only</strong><p>This record does not confirm active insurance coverage, claim eligibility, approval, payment, settlement, or reimbursement.</p></div></article><section className="claim-evidence-panel"><div className="policy-section-heading"><div><p className="eyebrow">Supporting documents</p><h2>Evidence</h2></div></div><p>Upload documents that help explain this simulated claim. Files are private to your account and limited to PDF, JPEG, and PNG formats up to 10 MB.  </p><form ref={evidenceFormRef} className="evidence-form" onSubmit={uploadEvidence}><label className="form-field">Evidence document<input name="evidence" required type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" /></label><button type="submit" className="button" disabled={uploading}>{uploading ? 'Uploading…' : 'Upload evidence'}</button></form>{uploadSuccess && <div className="policy-success" role="status">{uploadSuccess}</div>}{uploadError && <p className="form-error">{uploadError}</p>}{evidenceLoading && <p className="evidence-status">Loading uploaded documents…</p>}{evidenceError && <p className="form-error">{evidenceError}</p>}{!evidenceLoading && !evidenceError && !evidence.length && <p className="evidence-status">No evidence documents uploaded yet.</p>}{!evidenceLoading && evidence.length > 0 && <ul className="evidence-list">{evidence.map((document) => <li key={document.document_id}><div><strong>{document.original_filename}</strong><span>{document.mime_type} · {(document.file_size / (1024 * 1024)).toFixed(2)} MB</span></div><button type="button" className="text-link evidence-download" onClick={() => downloadEvidence(document)}>Download</button></li>)}</ul>}</section></>}</AppPage></AppLayout>
 }
 function AdminTable({ title }) { const [countries, setCountries] = useState([]); useEffect(() => { apiRequest('/countries').then((result) => setCountries(result.data)).catch(() => setCountries([])) }, []); return <AppLayout admin><AppPage title={title} eyebrow="Operations"><div className="data-table">{countries.map((country) => <div className="table-row" key={country.country_id}><b>{country.country_name}</b><span>Medical + trip</span><span className="status">Published</span></div>)}</div></AppPage></AppLayout> }
 function Simple({ title }) { return <AppLayout><AppPage title={title}><Empty title="Nothing new here" text="This demo section is ready for your future records." /></AppPage></AppLayout> }
