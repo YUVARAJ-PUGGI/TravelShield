@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import dotenv from "dotenv";
+import pool from "../config/db.js";
 
 dotenv.config();
 
@@ -66,4 +67,26 @@ export function requireAuth(req, res, next) {
 
   req.user = { userId: Number(userIdText) };
   return next();
+}
+
+export async function requireAdmin(req, res, next) {
+  try {
+    const [rows] = await pool.query(
+      "SELECT is_admin FROM users WHERE user_id = ?",
+      [req.user.userId]
+    );
+    if (!rows.length || !rows[0].is_admin) {
+      return res.status(403).json({
+        success: false,
+        message: "Administrator access is required for claim review.",
+      });
+    }
+    return next();
+  } catch (error) {
+    console.error("Failed to check admin access:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to verify administrator access.",
+    });
+  }
 }

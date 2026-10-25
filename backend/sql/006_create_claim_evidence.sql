@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 -- Educational simulation only. Evidence documents are private user uploads.
 CREATE TABLE IF NOT EXISTS claim_evidence_documents (
@@ -20,3 +20,4 @@ CREATE TABLE IF NOT EXISTS claim_evidence_documents (
   CONSTRAINT chk_claim_evidence_file_size
     CHECK (file_size > 0 AND file_size <= 10485760)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

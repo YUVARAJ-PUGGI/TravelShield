@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 -- Educational simulation only. This table does not represent real insurance
 -- claims processing, approval, reimbursement, or settlement.
@@ -36,3 +36,4 @@ CREATE TABLE IF NOT EXISTS claims (
   CONSTRAINT chk_claims_amount
     CHECK (claimed_amount >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

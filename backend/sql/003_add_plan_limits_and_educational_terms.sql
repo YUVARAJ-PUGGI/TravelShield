@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 SET @sql = (
   SELECT IF(
@@ -88,7 +88,7 @@ SET
     JSON_OBJECT('title', 'Visa and immigration outcomes', 'description', 'No plan guarantees visa approval, residency, or any immigration outcome.')
   ),
   eligibility_requirements = JSON_ARRAY(
-    JSON_OBJECT('title', 'Student eligibility', 'description', 'Students aged 18–35 with enrolment evidence; coverage duration is 1–365 days.')
+    JSON_OBJECT('title', 'Student eligibility', 'description', 'Students aged 18â€“35 with enrolment evidence; coverage duration is 1â€“365 days.')
   ),
   policy_conditions = JSON_ARRAY(
     JSON_OBJECT('title', 'Purchase timing', 'description', 'Purchase before departure for applicable pre-departure benefits.'),
@@ -102,3 +102,4 @@ SET
 WHERE plan_id IN (1, 2, 3);
 
 COMMIT;
+

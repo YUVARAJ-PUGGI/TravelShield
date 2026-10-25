@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 -- Educational simulation only. This table does not represent real insurance.
 -- This migration is additive and does not change existing users, quotes, plans,
@@ -33,3 +33,4 @@ CREATE TABLE IF NOT EXISTS policies (
   CONSTRAINT chk_policies_premium
     CHECK (premium_amount >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

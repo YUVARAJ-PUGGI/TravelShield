@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 START TRANSACTION;
 
@@ -99,3 +99,4 @@ SET
 WHERE plan_id = 3;
 
 COMMIT;
+

@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 SET @sql = (
   SELECT IF(
@@ -59,3 +59,4 @@ SET @sql = (
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+

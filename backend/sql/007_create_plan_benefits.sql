@@ -1,4 +1,4 @@
-USE travelshield_db;
+﻿USE travelshield;
 
 -- Educational examples only. These rows are not real insurance coverage,
 -- guarantees, or promises of reimbursement.
@@ -204,3 +204,4 @@ ON DUPLICATE KEY UPDATE
   required_evidence = VALUES(required_evidence),
   exclusions_conditions = VALUES(exclusions_conditions),
   is_active = VALUES(is_active);
+
