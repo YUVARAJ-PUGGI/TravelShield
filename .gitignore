@@ -8,3 +8,4 @@ backend/private-storage/
 *.sql.bak
 *_backup.sql
 *_before_*.sql
+*.log
